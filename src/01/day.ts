@@ -4,11 +4,11 @@ import * as Util from '../util';
 
 type Input = number[];
 
-// const calculateFuel = R.pipe(R.flip(R.divide)(3), Math.floor, R.flip(R.subtract)(2));
+const calculateFuel = R.pipe(R.divide(R.__, 3), Math.floor, R.subtract(R.__, 2));
 
-const calculateFuel = (mass: number) => {
-    return Math.floor(mass / 3) - 2;
-};
+// const calculateFuel = (mass: number) => {
+//     return Math.floor(mass / 3) - 2;
+// };
 
 // const calculateFuelChain = (mass: number): number => {
 //     return R.cond<number, number>([
