@@ -1,0 +1,28 @@
+{
+    "name": "advent-of-code-2019",
+    "version": "1.0.0",
+    "description": "Advent of Code 2019 in TypeScript",
+    "main": "index.js",
+    "dependencies": {
+        "@types/jest": "24.0.23",
+        "@types/node": "12.12.14",
+        "@types/ramda": "0.26.36",
+        "fsevents": "2.1.2",
+        "immutable": "4.0.0-rc.12",
+        "jest": "24.9.0",
+        "prettier": "1.19.1",
+        "ramda": "0.26.1",
+        "ts-jest": "24.2.0",
+        "typescript": "3.7.2"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "run": "node --stack_size=999999 --max-old-space-size=8192 src/app.js",
+        "start": "tsc && node src/app.js",
+        "dev-compile": "tsc -w",
+        "test": "jest",
+        "test-watch": "jest --watch"
+    },
+    "author": "ssnielsen (https://github.com/ssnielsen)",
+    "license": "ISC"
+}
