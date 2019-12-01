@@ -30,5 +30,5 @@ const part2 = (input: typeof inputData) => {
 
 export const run = () => {
     console.log('Part 1', part1(inputData));
-    console.log('Part 1', part2(inputData));
+    console.log('Part 2', part2(inputData));
 };
