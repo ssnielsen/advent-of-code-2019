@@ -1,13 +1,10 @@
+import * as R from 'ramda';
+
 import * as Util from '../util';
 
 type Program = number[];
 
-const print = (program: Program) => {
-    console.log(program.join(' '));
-};
-
 const execute = (program: Program, pointer: number = 0): number[] => {
-    // print(program);
     const instruction = program[pointer];
     const opPointer1 = program[pointer + 1];
     const opPointer2 = program[pointer + 2];
@@ -29,21 +26,48 @@ const execute = (program: Program, pointer: number = 0): number[] => {
     }
 };
 
+const copyProgram = (program: Program) => Array.from(program);
+
 const part1 = (program: Program) => {
-    return execute(program)[0];
+    const programCopy = copyProgram(program);
+    programCopy[1] = 12;
+    programCopy[2] = 2;
+    return execute(programCopy)[0];
+};
+
+const part2 = (program: Program, target: number) => {
+    // for (let noun = 0; noun <= 99; noun++) {
+    //     for (let verb = 0; verb <= 99; verb++) {
+    //         const programCopy = copyProgram(program);
+    //         programCopy[1] = noun;
+    //         programCopy[2] = verb;
+    //         const result = execute(programCopy);
+
+    //         if (result[0] === target) {
+    //             return 100 * noun + verb;
+    //         }
+    //     }
+    // }
+
+    return R.pipe(
+        (from: number, to: number) => R.xprod(R.range(from, to + 1), R.range(from, to + 1)),
+        R.takeWhile(([noun, verb]) => {
+            const programCopy = copyProgram(program);
+            programCopy[1] = noun;
+            programCopy[2] = verb;
+            const result = execute(programCopy);
+            return result[0] !== target;
+        }),
+        R.last,
+        ([noun, verb]: [number, number]) => 100 * noun + verb,
+    )(0, 99);
 };
 
 export const run = () => {
-    const inputData = Util.loadInput('02')[0]
+    const program = Util.loadInput('02')[0]
         .split(',')
         .map(Number);
 
-    // // const inputData = '1,9,10,3,2,3,11,0,99,30,40,50'.split(',').map(Number);
-    // const inputData = '2,4,4,5,99,0'.split(',').map(Number);
-
-    inputData[1] = 12;
-    inputData[2] = 2;
-
-    console.log('Part 1', part1(inputData));
-    console.log('Done');
+    console.log('Part 1:', part1(program));
+    console.log('Part 2:', part2(program, 19690720));
 };
