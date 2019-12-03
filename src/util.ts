@@ -8,3 +8,5 @@ export const loadInput = (day: string) =>
         R.trim,
         R.split('\n'),
     )(`${__dirname}/${day}/input`);
+
+export const hasValue = <T>(value: T | null | undefined): value is T => value !== undefined && value !== null;

@@ -3,5 +3,6 @@
         "**/*.map": true,
         "**/node_modules/**": true,
         "src/**/*.js": true
-    }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
