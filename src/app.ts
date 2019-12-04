@@ -1,3 +1,3 @@
-import {run} from './03/day';
+import {run} from './04/day';
 
 run();
