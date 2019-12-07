@@ -10,7 +10,7 @@ const execute = (
     input: number[],
     pointer: number = 0,
     outputs: number[] = [],
-): {program: number[]; outputs: number[]} => {
+): {program: number[]; outputs: number[]; halted: boolean; pointer: number} => {
     const instruction = String(program[pointer]);
 
     const [parms, opCode] = R.splitAt(instruction.length - 2, instruction);
@@ -36,7 +36,8 @@ const execute = (
             return execute(program, input, pointer + 4, outputs);
         case 3: // Save input to mem
             if (input.length === 0) {
-                throw Error('No inputs left!');
+                // throw Error('No inputs left!');
+                return {program, outputs, halted: false, pointer: pointer};
             }
             program[opPointer1] = input[0];
             return execute(program, input.slice(1), pointer + 2, outputs);
@@ -63,7 +64,7 @@ const execute = (
             program[opPointer3] = op1 === op2 ? 1 : 0;
             return execute(program, input, pointer + 4, outputs);
         case 99: // Halt
-            return {program, outputs};
+            return {program, outputs, halted: true, pointer};
         default:
             throw new Error(`Unknown operation code: ${opCode}`);
     }
@@ -78,7 +79,7 @@ const part1 = (program: Program) => {
 
     const result = allCombinations.reduce(
         (largestOutput, phaseSettings) => {
-            const output = phaseSettings.reduce((output, phaseSetting, i) => {
+            const output = phaseSettings.reduce((output, phaseSetting) => {
                 const programCopy = copyProgram(program);
                 const {outputs: programOutputs} = execute(programCopy, [
                     phaseSetting,
@@ -100,11 +101,53 @@ const part1 = (program: Program) => {
     return result;
 };
 
-// const part2 = (program: Program) => {
-//     const programCopy = copyProgram(program);
-//     const {program: result, outputs} = execute(programCopy, [5]);
-//     return outputs[outputs.length - 1];
-// };
+const part2 = (program: Program) => {
+    const allCombinations = Combinatorics.permutation([5, 6, 7, 8, 9]).map(
+        x => x,
+    );
+
+    const result = allCombinations.reduce(
+        (largestOutput, phaseSettings) => {
+            const amps = Array<ReturnType<typeof execute>>();
+            phaseSettings.forEach((phaseSetting, i) => {
+                const programCopy = copyProgram(program);
+                const prevOutput = i === 0 ? 0 : R.last(amps[i - 1].outputs);
+                amps[i] = execute(programCopy, [phaseSetting, prevOutput!]);
+            });
+
+            let halted = false;
+
+            while (!halted) {
+                R.range(0, 5).forEach(i => {
+                    const prevIndex = i === 0 ? 4 : i - 1;
+                    const prevAmp = amps[prevIndex];
+                    const amp = amps[i];
+
+                    const iteratedAmp = execute(
+                        amp.program,
+                        [R.last(prevAmp.outputs)!],
+                        amp.pointer,
+                    );
+
+                    amps[i] = iteratedAmp;
+
+                    if (iteratedAmp.halted) {
+                        halted = true;
+                    }
+                });
+            }
+
+            const output = R.last(amps)!.outputs[0];
+
+            return output > largestOutput.output
+                ? {output, phaseSettings}
+                : largestOutput;
+        },
+        {output: -Infinity, phaseSettings: new Array<number>()},
+    );
+
+    return result;
+};
 
 export const run = () => {
     // Tests for Part 1
@@ -114,6 +157,13 @@ export const run = () => {
     // const testInput =
     //     '3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0';
 
+    // Tests for Part 2
+    // const testInput =
+    //     '3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5';
+
+    // const testInput =
+    //     '3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10';
+
     // const program = testInput.split(',').map(Number);
 
     const program = loadInput('07')[0]
@@ -121,5 +171,5 @@ export const run = () => {
         .map(Number);
 
     console.log('Part 1:', part1(program));
-    // console.log('Part 2:', part2(program));
+    console.log('Part 2:', part2(program));
 };
