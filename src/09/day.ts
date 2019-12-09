@@ -22,19 +22,15 @@ const getOperand = (
     const modeFlag = params.charAt(delta - 1);
 
     switch (modeFlag) {
-        case Mode.position:
-            // Memory not being assigned yet should return zero.
-            return delta === 3 ? opPointer : program[opPointer] || 0;
         case Mode.immediate:
             return opPointer;
         case Mode.relative:
             return delta === 3
                 ? relativeBase + opPointer
                 : program[relativeBase + opPointer];
+        case Mode.position:
         default:
-            // console.error(
-            //     `Unexpected mode flag '${modeFlag}'. Assumning position mode.`,
-            // );
+            // Memory not being assigned yet should return zero.
             return delta === 3 ? opPointer : program[opPointer] || 0;
     }
 };
@@ -52,7 +48,6 @@ const execute = (
     pointer: number;
 } => {
     const instruction = String(program[pointer]);
-
     const [parms, opCode] = R.splitAt(instruction.length - 2, instruction);
     const parmsInOrder = parms
         .split('')
@@ -136,6 +131,80 @@ const execute = (
     }
 };
 
+const executeNew = (program: LargeProgram, input: number[] = []) => {
+    let pointer = 0;
+    let outputs = new Array<number>();
+    let relativeBase = 0;
+    let inputs = [...input];
+
+    while (true) {
+        const instruction = String(program[pointer]);
+        const [parms, opCode] = R.splitAt(instruction.length - 2, instruction);
+        const parmsInOrder = parms
+            .split('')
+            .reverse()
+            .join('');
+
+        const op1 = getOperand(parmsInOrder, program, pointer, 1, relativeBase);
+        const op2 = getOperand(parmsInOrder, program, pointer, 2, relativeBase);
+        const op3 = getOperand(parmsInOrder, program, pointer, 3, relativeBase);
+
+        switch (Number(opCode)) {
+            case 1: // Add
+                program[op3] = op1 + op2;
+                pointer += 4;
+                continue;
+            case 2: // Mul
+                program[op3] = op1 * op2;
+                pointer += 4;
+                continue;
+            case 3: // Save input to mem
+                if (inputs.length === 0) {
+                    // throw Error('No inputs left!');
+                    return {program, outputs, halted: false, pointer: pointer};
+                }
+                const mode = parmsInOrder.charAt(0);
+                switch (mode) {
+                    case '2':
+                        program[relativeBase + (program[pointer + 1] || 0)] =
+                            input[0];
+                        break;
+                    default:
+                        program[op1] = input[0];
+                }
+                pointer += 2;
+                inputs = inputs.slice(1);
+                continue;
+            case 4: // Read output from mem
+                outputs = [...outputs, op1];
+                pointer += 2;
+                continue;
+            case 5: // Jump if true
+                pointer = op1 !== 0 ? op2 : pointer + 3;
+                continue;
+            case 6: // Jump if false
+                pointer = op1 === 0 ? op2 : pointer + 3;
+                continue;
+            case 7: // Less than
+                program[op3] = op1 < op2 ? 1 : 0;
+                pointer += 4;
+                continue;
+            case 8: //  Equals
+                program[op3] = op1 === op2 ? 1 : 0;
+                pointer += 4;
+                continue;
+            case 9: // Adjust relative base
+                relativeBase += op1;
+                pointer += 2;
+                continue;
+            case 99: // Halt
+                return {program, outputs, halted: true, pointer};
+            default:
+                throw new Error(`Unknown operation code: ${opCode}`);
+        }
+    }
+};
+
 const copyProgram = (program: Program): LargeProgram => {
     return Object.keys(program).reduce((o, k) => {
         return {
@@ -147,7 +216,12 @@ const copyProgram = (program: Program): LargeProgram => {
 
 const part1 = (program: Program) => {
     const programCopy = copyProgram(program);
-    return execute(programCopy, [1]).outputs;
+    return executeNew(programCopy, [1]).outputs;
+};
+
+const part2 = (program: Program) => {
+    const programCopy = copyProgram(program);
+    return executeNew(programCopy, [2]).outputs;
 };
 
 export const run = () => {
@@ -168,4 +242,5 @@ export const run = () => {
         .map(Number);
 
     console.log('Part 1:', part1(program));
+    console.log('Part 2:', part2(program));
 };
