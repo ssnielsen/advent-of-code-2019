@@ -49,56 +49,8 @@ const part1 = (grid: Grid) => {
         R.range(0, grid.length),
         R.range(0, grid[0].length),
     )
-        .filter(([x, y]) => grid[y][x])
+        .filter(([x, y]) => grid[x][y])
         .map(([x, y]) => ({x, y}));
-
-    // const edges = [
-    //     ...R.range(0, grid.length).map(x => ({x, y: 0})),
-    //     ...R.range(0, grid.length).map(y => ({x: 0, y})),
-    //     ...R.range(0, grid.length).map(x => ({x, y: grid.length - 1})),
-    //     ...R.range(0, grid.length).map(y => ({x: grid.length - 1, y})),
-    // ];
-
-    // const result = asteroids.reduce((maxVisible, [x, y]) => {
-    //     const counted = new Array<Point>();
-
-    //     const visibleForPoint = edges
-    //         .filter(edgePoint => {
-    //             if (x === 0 && y === 0) {
-
-    //             }
-    //         })
-    //         .map(edgePoint => {
-    //             const validPoints = coordinatesInSight({x, y}, edgePoint);
-    //             // if (x === 3 && y === 4) {
-    //             //     console.log(edgePoint, validPoints);
-    //             // }
-    //             const found = validPoints.find(
-    //                 point =>
-    //                     grid[point.y][point.x] &&
-    //                     !counted.some(
-    //                         countedPoint =>
-    //                             countedPoint.x === point.x &&
-    //                             countedPoint.y === point.y,
-    //                     ),
-    //             );
-
-    //             if (found) {
-    //                 counted.push(found);
-    //                 return found;
-    //             } else {
-    //                 return null;
-    //             }
-    //         })
-    //         .filter(Util.hasValue);
-
-    //     // if (x === 3 && y === 4) {
-    //     //     console.log({x, y}, visibleForPoint);
-    //     // }
-
-    //     console.log({x, y}, visibleForPoint.length);
-    //     return Math.max(visibleForPoint.length, maxVisible);
-    // }, -Infinity);
 
     const result = asteroids.reduce((maxVisible, asteroid) => {
         const otherAsteroids = asteroids.filter(
@@ -112,16 +64,10 @@ const part1 = (grid: Grid) => {
             })),
         );
 
-        // console.log(asteroid, sortedOtherAsteroids);
-
         const foundVisible = new Array<Point>();
 
         const _ = sortedOtherAsteroids.filter(other => {
             const pathToOther = coordinatesInSight(asteroid, other);
-
-            // if (asteroid.x === 3 && asteroid.y === 4) {
-            //     console.log(other, pathToOther);
-            // }
 
             if (
                 R.all(
@@ -136,8 +82,6 @@ const part1 = (grid: Grid) => {
                 foundVisible.push(other);
             }
         });
-
-        console.log(asteroid, foundVisible.length);
 
         return Math.max(maxVisible, foundVisible.length);
     }, -Infinity);
@@ -166,7 +110,7 @@ export const run = () => {
     //             R.map(x => x === '#'),
     //         ),
     //     ),
-    //     // R.transpose,
+    //     R.transpose,
     // )(testInput);
     const input = R.pipe(
         R.map(
@@ -176,7 +120,7 @@ export const run = () => {
                 R.map(x => x === '#'),
             ),
         ),
-        // R.transpose,
+        R.transpose,
     )(Util.loadInput('10'));
 
     console.log('Part 1:', part1(input));
