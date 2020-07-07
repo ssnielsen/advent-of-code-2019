@@ -4,7 +4,7 @@
     "description": "Advent of Code 2019 in TypeScript",
     "main": "index.js",
     "dependencies": {
-        "@types/jest": "24.0.23",
+        "@types/jest": "26.0.4",
         "@types/node": "12.12.14",
         "@types/ramda": "0.26.36",
         "fsevents": "2.1.2",
