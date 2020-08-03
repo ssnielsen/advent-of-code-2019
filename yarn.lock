@@ -2018,10 +2018,10 @@ jest@24.9.0:
     import-local "^2.0.0"
     jest-cli "^24.9.0"
 
-js-combinatorics@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/js-combinatorics/-/js-combinatorics-0.5.4.tgz#c92916b8f8171b64ecd7c4435b72cfabc803c756"
-  integrity sha512-PCqUIKGqv/Kjao1G4GE/Yni6QkCP2nWW3KnxL+8IGWPlP18vQpT8ufGMf4XUAAY8JHEryUCJbf51zG8329ntMg==
+js-combinatorics@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/js-combinatorics/-/js-combinatorics-1.2.3.tgz#89361ca7553b22cdfd66bf27e5c2a9752f20c477"
+  integrity sha512-Q8Cu3KeP5TkTTFLwvzDVMYkQpW53/p4Dy7KRLC1/GnjVybzenlsoPtYVd1Vkp2uutquKxtAX0Ef2k4s2W8evzA==
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
