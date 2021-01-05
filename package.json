@@ -7,7 +7,7 @@
         "@types/jest": "24.0.23",
         "@types/node": "12.12.14",
         "@types/ramda": "0.26.36",
-        "fsevents": "2.1.2",
+        "fsevents": "2.2.2",
         "immutable": "4.0.0-rc.12",
         "jest": "24.9.0",
         "js-combinatorics": "^0.5.4",
